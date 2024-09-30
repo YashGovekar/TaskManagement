@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.table {
+    @apply w-full text-black;
+}
+
+.table thead > tr {
+    @apply bg-white rounded-tl-lg rounded-tr-lg;
+}
+
+.table thead tr > th {
+    @apply font-bold text-sm py-3 px-4;
+}
+
+.table tbody tr:hover > td {
+    opacity:0.9;
+    cursor: pointer;
+}
+
+.table tbody tr:nth-child(odd) > td {
+    @apply bg-gray-100 cursor-pointer;
+}
+
+.table tbody tr > td {
+    @apply p-2 text-lg font-semibold bg-gray-100 py-3 px-4;
+}

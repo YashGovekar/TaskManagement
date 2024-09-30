@@ -1,0 +1,60 @@
+name: PSR-12 Check
+
+on:
+  push:
+    branches:
+      - master
+      - development
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  phpcs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch all history to avoid shallow clone issues
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Install Composer dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --ignore-platform-reqs
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Get list of changed PHP files
+        id: changed-files
+        run: |
+          if [[ ${{ github.event_name }} == 'pull_request' ]]; then
+            git fetch --depth=1 origin
+            CHANGED_FILES=$(git diff --color=always --name-only origin/${{ github.event.pull_request.base.ref }} HEAD -- '*.php')
+          else
+            # For pushes, compare with the previous commit
+            CHANGED_FILES=$(git diff --color=always --name-only --diff-filter=AM HEAD^ HEAD | grep '\.php$' || echo "")
+          fi
+          
+          CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ' ')
+          
+          echo "php_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+        shell: bash
+        env:
+          TERM: xterm
+
+      - name: Run Laravel Pint on changed files
+        if: steps.changed-files.outputs.php_files != ' '
+        run: |
+          files="${{ steps.changed-files.outputs.php_files }}"
+          if [ -n "$files" ]; then
+            ./vendor/bin/pint --test --verbose --ansi $files
+          else
+            echo "No PHP files changed."
+          fi
+        env:
+          TERM: xterm
