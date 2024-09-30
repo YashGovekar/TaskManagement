@@ -72,27 +72,32 @@ function deleteTask(task) {
       <th>Actions</th>
     </tr>
     </thead>
-    <tbody>
-    <tr
-        v-for="(task, index) in rows"
-        :key="task.id"
-        :draggable="true"
-        @dragstart="onDragStart(index, task.priority)"
-        @dragover.prevent
-        @drop="onDrop(index, task.priority)"
-    >
-      <td class="text-left">#{{ task.priority }}</td>
-      <td class="text-left">{{ task.name }}</td>
-      <td class="text-left">{{ task.project?.name }}</td>
-      <td class="text-left">{{ task.completion_date_time }}</td>
-      <td>{{ $snakeToProperCase(task.status) }}</td>
-      <td class="flex flex-row gap-2 justify-center">
-        <button class="text-primary" @click="$inertia.visit(route('tasks.edit', task.id))">Edit</button>
-        <form @submit.prevent="deleteTask(task)">
-          <button class="text-red-500" type="submit">Delete</button>
-        </form>
-      </td>
-    </tr>
+    <tbody v-if="Object.keys(tasks).length">
+      <tr
+          v-for="(task, index) in rows"
+          :key="task.id"
+          :draggable="true"
+          @dragstart="onDragStart(index, task.priority)"
+          @dragover.prevent
+          @drop="onDrop(index, task.priority)"
+      >
+        <td class="text-left">#{{ task.priority }}</td>
+        <td class="text-left">{{ task.name }}</td>
+        <td class="text-left">{{ task.project?.name ?? 'NA' }}</td>
+        <td class="text-left">{{ task.completion_date_time }}</td>
+        <td>{{ $snakeToProperCase(task.status) }}</td>
+        <td class="flex flex-row gap-2 justify-center">
+          <button class="text-primary" @click="$inertia.visit(route('tasks.edit', task.id))">Edit</button>
+          <form @submit.prevent="deleteTask(task)">
+            <button class="text-red-500" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+    <tbody v-else>
+      <tr>
+        <td colspan="6" class="text-center text-red-500">No tasks found</td>
+      </tr>
     </tbody>
   </table>
 </template>

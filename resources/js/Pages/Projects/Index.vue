@@ -55,7 +55,7 @@ function deleteProject(project) {
                 <th>Actions</th>
               </tr>
               </thead>
-              <tbody>
+              <tbody v-if="Object.keys(projects).length">
                 <tr v-for="project in projects">
                   <td class="text-left">{{ project.name }}</td>
                   <td>{{ project.description }}</td>
@@ -65,6 +65,11 @@ function deleteProject(project) {
                       <button class="text-red-500" type="submit">Delete</button>
                     </form>
                   </td>
+                </tr>
+              </tbody>
+              <tbody v-else>
+                <tr>
+                  <td colspan="6" class="text-center text-red-500">No projects found</td>
                 </tr>
               </tbody>
             </table>
